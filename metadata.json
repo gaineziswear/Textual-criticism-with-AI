@@ -1,0 +1,6 @@
+{
+  "name": "Glossa",
+  "description": "Ancient manuscript word-by-word language identification, literal glossing across 53 canonical languages, root fallbacks, Semitic textual criticism, and multi-agent AI comparative analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
