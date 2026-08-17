@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -127,8 +128,8 @@ fun GlossaReaderScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         // Hero Banner & Header
         item {
@@ -138,7 +139,7 @@ fun GlossaReaderScreen(
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(top = 4.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     AsyncImage(
@@ -146,7 +147,7 @@ fun GlossaReaderScreen(
                         contentDescription = "Glossa Header Banner",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(110.dp)
+                            .height(115.dp)
                             .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp)),
                         contentScale = ContentScale.Crop
                     )
@@ -160,73 +161,76 @@ fun GlossaReaderScreen(
                     ) {
                         Column {
                             Text(
-                                text = "GLOSSA",
-                                style = MaterialTheme.typography.headlineLarge.copy(
-                                    letterSpacing = 2.sp,
-                                    fontSize = 24.sp
-                                ),
+                                text = "Glossa",
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                                 color = ParchmentGold
                             )
                             Text(
-                                text = "Ancient Manuscript Word-by-Word Analyzer",
+                                text = "Multilingual Ancient Manuscript Analyzer & Philological Studio",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = LapisCyan
+                                color = TextMuted
                             )
                         }
 
                         Surface(
                             color = CyanContainer,
                             shape = RoundedCornerShape(20.dp),
-                            border = BorderStroke(1.dp, CyanGlow.copy(alpha = 0.5f))
+                            border = BorderStroke(1.dp, CyanGlow.copy(alpha = 0.4f))
                         ) {
                             Text(
-                                text = "53 Canonical Languages",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                text = "53 Ancient Languages",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 color = CyanGlow,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                             )
                         }
                     }
-                }
-            }
-        }
 
-        // Preloaded Historical Samples Picker
-        item {
-            Column {
-                Text(
-                    text = "Historical Epigraphic Samples",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(SampleManuscripts.ALL_SAMPLES) { sample ->
-                        Surface(
-                            color = if (inputText == sample.originalText) GoldenAmberLight else SurfaceCard,
-                            shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                if (inputText == sample.originalText) ParchmentGold else SurfaceCardBorder
-                            ),
-                            modifier = Modifier
-                                .testTag("sample_chip_${sample.title.take(6)}")
-                                .clickable { viewModel.loadSample(sample) }
-                        ) {
-                            Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
-                                Text(
-                                    text = sample.title,
-                                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 12.sp),
-                                    color = if (inputText == sample.originalText) Color(0xFF0F172A) else ParchmentGold,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = sample.tradition,
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                                    color = if (inputText == sample.originalText) Color(0xFF334155) else TextMuted
-                                )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Preset Manuscripts Selector
+                    Text(
+                        text = "Curated Historical Epigraphs & Codices:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(SampleManuscripts.ALL_SAMPLES) { sample ->
+                            val isSelected = inputText == sample.originalText
+                            Surface(
+                                color = if (isSelected) GoldenAmberLight else Color(0xFF0F172A),
+                                shape = RoundedCornerShape(8.dp),
+                                border = BorderStroke(
+                                    1.dp,
+                                    if (isSelected) ParchmentGold else SurfaceCardBorder
+                                ),
+                                modifier = Modifier
+                                    .clickable { viewModel.loadSample(sample) }
+                                    .testTag("sample_${sample.title.take(10)}")
+                            ) {
+                                Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
+                                    Text(
+                                        text = sample.title,
+                                        style = MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        ),
+                                        color = if (isSelected) Color(0xFF0F172A) else ParchmentGold
+                                    )
+                                    Text(
+                                        text = "${sample.tradition} · ${sample.scriptName}",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                        color = if (isSelected) Color(0xFF1E293B) else TextMuted
+                                    )
+                                }
                             }
                         }
                     }
@@ -346,7 +350,7 @@ fun GlossaReaderScreen(
             }
         }
 
-        // Interlinear Tokens Grid (FlowRow)
+        // Interlinear Tokens Grid (Responsive Adaptive Flow)
         item {
             if (wordGlosses.isEmpty()) {
                 Surface(
@@ -367,18 +371,30 @@ fun GlossaReaderScreen(
                     }
                 }
             } else {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    wordGlosses.forEach { gloss ->
-                        WordCard(
-                            gloss = gloss,
-                            isSelected = selectedWord?.index == gloss.index,
-                            onClick = { viewModel.selectWordForDetail(gloss) },
-                            modifier = Modifier.width(170.dp)
-                        )
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    val availableWidth = maxWidth
+                    // Calculate optimal card width: 2 columns on mobile portrait, 3-4 columns on tablet/wide screens
+                    val columns = when {
+                        availableWidth > 800.dp -> 4
+                        availableWidth > 540.dp -> 3
+                        else -> 2
+                    }
+                    val spacing = 8.dp
+                    val itemWidth = (availableWidth - (spacing * (columns - 1))) / columns
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(spacing),
+                        verticalArrangement = Arrangement.spacedBy(spacing)
+                    ) {
+                        wordGlosses.forEach { gloss ->
+                            WordCard(
+                                gloss = gloss,
+                                isSelected = selectedWord?.index == gloss.index,
+                                onClick = { viewModel.selectWordForDetail(gloss) },
+                                modifier = Modifier.width(itemWidth)
+                            )
+                        }
                     }
                 }
             }

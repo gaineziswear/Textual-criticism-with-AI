@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit
 object MultiProviderComparisonEngine {
 
     private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .writeTimeout(15, TimeUnit.SECONDS)
+        .connectTimeout(2500, TimeUnit.MILLISECONDS)
+        .readTimeout(2500, TimeUnit.MILLISECONDS)
+        .writeTimeout(2500, TimeUnit.MILLISECONDS)
         .build()
 
     suspend fun compareWord(

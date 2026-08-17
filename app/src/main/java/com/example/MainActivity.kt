@@ -6,15 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Compare
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.outlined.AccountTree
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Compare
 import androidx.compose.material.icons.outlined.MenuBook
@@ -25,6 +26,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,18 +42,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.screens.AgentOrchestratorScreen
 import com.example.ui.screens.GlossaReaderScreen
 import com.example.ui.screens.LanguageCatalogScreen
 import com.example.ui.screens.ManuscriptArchiveScreen
 import com.example.ui.screens.MultiAgentStudioScreen
 import com.example.ui.screens.MultiProviderComparisonScreen
-import com.example.ui.theme.LapisCyan
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.ParchmentGold
-import com.example.ui.theme.SurfaceCard
 import com.example.ui.theme.SurfaceDark
 import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextPrimary
+import com.example.viewmodel.AgentOrchestratorViewModel
 import com.example.viewmodel.GlossaViewModel
 
 enum class GlossaNavTab(
@@ -59,6 +62,7 @@ enum class GlossaNavTab(
     val testTag: String
 ) {
     READER("Reader", Icons.Filled.Translate, Icons.Outlined.Translate, "nav_reader_tab"),
+    ORCHESTRATOR("Pipeline", Icons.Filled.AccountTree, Icons.Outlined.AccountTree, "nav_orchestrator_tab"),
     AGENTS("Agents", Icons.Filled.Psychology, Icons.Outlined.Psychology, "nav_agents_tab"),
     COMPARE("Compare", Icons.Filled.Compare, Icons.Outlined.Compare, "nav_compare_tab"),
     CATALOG("53 Langs", Icons.Filled.MenuBook, Icons.Outlined.MenuBook, "nav_catalog_tab"),
@@ -67,7 +71,8 @@ enum class GlossaNavTab(
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: GlossaViewModel by viewModels()
+    private val glossaViewModel: GlossaViewModel by viewModels()
+    private val orchestratorViewModel: AgentOrchestratorViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,19 +80,26 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyApplicationTheme {
-                GlossaApp(viewModel = viewModel)
+                GlossaApp(
+                    glossaVm = glossaViewModel,
+                    orchestratorVm = orchestratorViewModel
+                )
             }
         }
     }
 }
 
 @Composable
-fun GlossaApp(viewModel: GlossaViewModel) {
+fun GlossaApp(
+    glossaVm: GlossaViewModel,
+    orchestratorVm: AgentOrchestratorViewModel
+) {
     var selectedTabPosition by rememberSaveable { mutableIntStateOf(0) }
     val tabs = GlossaNavTab.entries
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets.statusBars,
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             NavigationBar(
@@ -109,8 +121,9 @@ fun GlossaApp(viewModel: GlossaViewModel) {
                             Text(
                                 text = tab.title,
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 10.sp
-                                )
+                                    fontSize = 9.sp
+                                ),
+                                maxLines = 1
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -133,20 +146,24 @@ fun GlossaApp(viewModel: GlossaViewModel) {
         ) {
             when (tabs[selectedTabPosition]) {
                 GlossaNavTab.READER -> GlossaReaderScreen(
-                    viewModel = viewModel,
+                    viewModel = glossaVm,
                     onNavigateToAgent = { selectedTabPosition = 1 }
                 )
+                GlossaNavTab.ORCHESTRATOR -> AgentOrchestratorScreen(
+                    orchestratorVm = orchestratorVm,
+                    glossaVm = glossaVm
+                )
                 GlossaNavTab.AGENTS -> MultiAgentStudioScreen(
-                    viewModel = viewModel
+                    viewModel = glossaVm
                 )
                 GlossaNavTab.COMPARE -> MultiProviderComparisonScreen(
-                    viewModel = viewModel
+                    viewModel = glossaVm
                 )
                 GlossaNavTab.CATALOG -> LanguageCatalogScreen(
-                    viewModel = viewModel
+                    viewModel = glossaVm
                 )
                 GlossaNavTab.ARCHIVE -> ManuscriptArchiveScreen(
-                    viewModel = viewModel
+                    viewModel = glossaVm
                 )
             }
         }
