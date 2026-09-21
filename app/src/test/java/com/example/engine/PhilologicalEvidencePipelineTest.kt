@@ -2,9 +2,9 @@ package com.example.engine
 
 import com.example.model.PhilologicalClassification
 import com.example.model.VerificationStatus
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 
 class PhilologicalEvidencePipelineTest {
 
