@@ -37,6 +37,13 @@ jobs:
           "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
 
+      - name: Create debug signing keystore
+        run: |
+          if [ ! -f debug.keystore ]; then
+            keytool -genkeypair               -keystore debug.keystore               -storepass android               -keypass android               -alias androiddebugkey               -keyalg RSA               -keysize 2048               -validity 10000               -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          test -f debug.keystore
+
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -44,10 +51,7 @@ jobs:
 
       - name: Run philological engine tests
         run: |
-          gradle :app:testDebugUnitTest --no-daemon --stacktrace \
-            --tests com.example.engine.ArabicCandidateExtractorTest \
-            --tests com.example.engine.PhilologicalClassificationEngineTest \
-            --tests com.example.engine.PhilologicalEvidencePipelineTest
+          gradle :app:testDebugUnitTest --no-daemon --stacktrace             --tests com.example.engine.ArabicCandidateExtractorTest             --tests com.example.engine.PhilologicalClassificationEngineTest             --tests com.example.engine.PhilologicalEvidencePipelineTest
 
       - name: Assemble debug APK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
