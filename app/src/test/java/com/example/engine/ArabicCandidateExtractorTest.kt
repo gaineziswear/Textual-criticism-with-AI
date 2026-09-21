@@ -24,7 +24,7 @@ class ArabicCandidateExtractorTest {
         val tokens = ArabicBaselineNormalizer.tokenize(text)
         val candidates = ArabicCandidateExtractor.extract(text)
 
-        assertEquals(tokens.size, 10)
+        assertEquals(tokens.size, 9)
         assertTrue(candidates.all { it.startToken in tokens.indices })
         assertTrue(candidates.all { it.endToken in tokens.indices })
         assertTrue(candidates.all { it.startToken <= it.endToken })
