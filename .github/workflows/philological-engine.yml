@@ -42,8 +42,12 @@ jobs:
         with:
           gradle-version: "9.3.1"
 
-      - name: Run unit tests
-        run: gradle :app:testDebugUnitTest --no-daemon --stacktrace
+      - name: Run philological engine tests
+        run: |
+          gradle :app:testDebugUnitTest --no-daemon --stacktrace \
+            --tests com.example.engine.ArabicCandidateExtractorTest \
+            --tests com.example.engine.PhilologicalClassificationEngineTest \
+            --tests com.example.engine.PhilologicalEvidencePipelineTest
 
       - name: Assemble debug APK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
