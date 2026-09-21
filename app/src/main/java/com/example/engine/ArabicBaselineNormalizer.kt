@@ -32,17 +32,23 @@ object ArabicBaselineNormalizer {
             .replace('ـ'.toString(), "")
             .trim()
 
-    fun tokenize(text: String): List<ArabicToken> =
-        whitespace.split(normalize(text))
+    fun tokenize(text: String): List<ArabicToken> {
+        if (text.isBlank()) return emptyList()
+
+        // Preserve the citation surface while normalizing only the comparison form.
+        // This prevents normalization (e.g. ؤ → و) from destroying the original witness.
+        return whitespace.split(text.trim())
             .filter { it.isNotBlank() }
-            .mapIndexed { index, token ->
+            .mapIndexed { index, surface ->
+                val normalized = normalize(surface)
                 ArabicToken(
                     index = index,
-                    surface = token,
-                    normalized = token,
-                    consonantalSkeleton = consonantalSkeleton(token)
+                    surface = surface,
+                    normalized = normalized,
+                    consonantalSkeleton = consonantalSkeleton(normalized)
                 )
             }
+    }
 
     private fun consonantalSkeleton(token: String): String =
         token
