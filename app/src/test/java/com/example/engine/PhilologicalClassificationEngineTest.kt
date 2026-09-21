@@ -3,8 +3,8 @@ package com.example.engine
 import com.example.model.PhilologicalClassification
 import com.example.model.PhilologicalEvidenceRecord
 import com.example.model.VerificationStatus
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.Test
+import org.junit.Assert.assertEquals
 
 class PhilologicalClassificationEngineTest {
 
