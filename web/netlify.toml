@@ -3,14 +3,37 @@
   publish = "dist"
   command = "npm run build"
 
+[functions]
+  directory = "netlify/functions"
+
+# Explicitly route API requests to the Netlify function before the SPA fallback.
+# This prevents the static CDN fallback from receiving POST requests.
+[[redirects]]
+  from = "/api/manuscripts"
+  to = "/.netlify/functions/forensics"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/analyze"
+  to = "/.netlify/functions/forensics"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/forced-language"
+  to = "/.netlify/functions/forensics"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/forensic-dossier"
+  to = "/.netlify/functions/forensics"
+  status = 200
+  force = true
+
 # SPA fallback for the React/Vite application.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-[functions]
-  directory = "netlify/functions"
-
-# Keep production builds on the Git-integrated Netlify pipeline.
-
-# Trigger a fresh production build after API route hardening.
