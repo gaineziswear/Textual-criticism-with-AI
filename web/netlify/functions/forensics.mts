@@ -2,7 +2,7 @@ import type { Config } from "@netlify/functions";
 
 export default async (req: Request) => {
   const incoming = new URL(req.url);
-  const suffix = incoming.pathname.replace(/^\/api\/forensics/, "") || "/manuscripts";
+  const suffix = incoming.pathname;
   const upstreamBase = Netlify.env.get("FORENSICS_API_BASE") || "https://hadith-linguistic-forensics-am2zb5.v2.appdeploy.ai";
   const upstream = new URL(suffix + incoming.search, upstreamBase.endsWith("/") ? upstreamBase : upstreamBase + "/");
 
@@ -29,5 +29,5 @@ export default async (req: Request) => {
 };
 
 export const config: Config = {
-  path: ["/api/forensics", "/api/forensics/*"],
+  path: ["/api/manuscripts", "/api/analyze", "/api/forced-language", "/api/forensic-dossier"],
 };
