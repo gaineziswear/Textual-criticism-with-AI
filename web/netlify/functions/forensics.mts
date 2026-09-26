@@ -1,11 +1,8 @@
-import type { Config } from "@netlify/functions";
-
 export default async (req: Request) => {
   const incoming = new URL(req.url);
-  const suffix = incoming.pathname;
+  const route = incoming.searchParams.get("route") || incoming.pathname;
   const upstreamBase = Netlify.env.get("FORENSICS_API_BASE") || "https://hadith-linguistic-forensics-am2zb5.v2.appdeploy.ai";
-  const upstream = new URL(suffix + incoming.search, upstreamBase.endsWith("/") ? upstreamBase : upstreamBase + "/");
-
+  const upstream = new URL(route, upstreamBase.endsWith("/") ? upstreamBase : upstreamBase + "/");
   try {
     const response = await fetch(upstream, {
       method: req.method,
@@ -13,11 +10,12 @@ export default async (req: Request) => {
       body: req.method === "GET" || req.method === "HEAD" ? undefined : await req.arrayBuffer(),
       signal: AbortSignal.timeout(30000),
     });
-
-    const contentType = response.headers.get("content-type") || "application/json";
     return new Response(response.body, {
       status: response.status,
-      headers: { "content-type": contentType, "cache-control": "no-store" },
+      headers: {
+        "content-type": response.headers.get("content-type") || "application/json",
+        "cache-control": "no-store",
+      },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Upstream research service unavailable.";
@@ -28,6 +26,6 @@ export default async (req: Request) => {
   }
 };
 
-export const config: Config = {
-  path: ["/api/manuscripts", "/api/analyze", "/api/forced-language", "/api/forensic-dossier"],
+export const config = {
+  path: ["/api/*"],
 };
