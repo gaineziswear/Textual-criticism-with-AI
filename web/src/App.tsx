@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp, Clipboard, ClipboardPaste, FlaskConical, Languages, Menu, Search, ShieldCheck, Sparkles, X } from 'lucide-react';
 
-const SUPABASE_RESEARCH_URL = import.meta.env.VITE_RESEARCH_API_BASE || 'https://nsonbtaiwrhxvxbbzinq.supabase.co/functions/v1/hadith-research-engine';
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_MnbrFOqXmwy3BZRwSE7m8w_qyjEn8HK';
+const RESEARCH_API_URL = import.meta.env.VITE_RESEARCH_API_BASE || '/api/research';
 
 type Manuscript={id:string;work:string;collection:string;shelfmark:string;manuscript_date:string;language:string;script:string;diacritics_status:string;witness_status:string;witness_excerpt:string;source_url:string;notes:string};
 type Analysis={detected_language:string;detection_confidence:number;summary:string;findings:{text:string;language:string;confidence:number;classification:string;evidence:string;caveat:string}[];methodological_notes:string[]};
@@ -22,19 +21,10 @@ const principles=['A manuscript witness is evidence of transmission, not automat
 
 async function callApi(path:string,body?:any){
  const action = path==='/api/analyze' ? 'analyze' : path==='/api/forced-language' ? 'forced-language' : path==='/api/forensic-dossier' ? 'dossier' : '';
- if(!action) throw new Error('This operation is served by the local verified catalogue.');
+ if(!action) throw new Error('Unsupported research operation.');
  const payload = body ? {...body, action} : {action};
- const res=await fetch(SUPABASE_RESEARCH_URL,{
-   method:'POST',
-   headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY},
-   body:JSON.stringify(payload)
- });
- if(!res.ok) {
-   const raw=await res.text();
-   let message=raw;
-   try { message=JSON.parse(raw)?.error || raw; } catch {}
-   throw new Error(message || 'Research service request failed.');
- }
+ const res=await fetch(RESEARCH_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ if(!res.ok){const raw=await res.text();let message=raw;try{message=JSON.parse(raw)?.error||raw}catch{}throw new Error(message||'Research service request failed.');}
  return res.json();
 }
 
