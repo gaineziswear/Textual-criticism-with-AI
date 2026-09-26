@@ -12,3 +12,5 @@
   directory = "netlify/functions"
 
 # Keep production builds on the Git-integrated Netlify pipeline.
+
+# Trigger a fresh production build after API route hardening.
