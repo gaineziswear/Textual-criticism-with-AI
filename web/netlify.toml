@@ -3,6 +3,7 @@
   publish = "dist"
   command = "npm run build"
 
+# SPA fallback for the React/Vite application.
 [[redirects]]
   from = "/*"
   to = "/index.html"
