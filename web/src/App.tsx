@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp, Clipboard, ClipboardPaste, FlaskConical, Languages, Menu, Search, ShieldCheck, Sparkles, X } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_FORENSICS_API_BASE || '';
+const SUPABASE_RESEARCH_URL = import.meta.env.VITE_RESEARCH_API_BASE || 'https://nsonbtaiwrhxvxbbzinq.supabase.co/functions/v1/hadith-research-engine';
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_MnbrFOqXmwy3BZRwSE7m8w_qyjEn8HK';
 
 type Manuscript={id:string;work:string;collection:string;shelfmark:string;manuscript_date:string;language:string;script:string;diacritics_status:string;witness_status:string;witness_excerpt:string;source_url:string;notes:string};
 type Analysis={detected_language:string;detection_confidence:number;summary:string;findings:{text:string;language:string;confidence:number;classification:string;evidence:string;caveat:string}[];methodological_notes:string[]};
@@ -19,9 +20,21 @@ const MANUSCRIPT_FALLBACK:Manuscript[]=[
 
 const principles=['A manuscript witness is evidence of transmission, not automatically an authorial original.','A cognate is not automatically a borrowing. Shared inheritance, contact, coincidence and orthographic similarity are tested separately.','A forced-language reading is an experiment, not proof of original composition.','The platform does not attempt to prove or disprove a religion, political position, doctrine or community tradition.'];
 
-async function callApi(path:string,body?:unknown){
- const res=await fetch(API_BASE+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});
- if(!res.ok) throw new Error(await res.text()||'Research service request failed.');
+async function callApi(path:string,body?:any){
+ const action = path==='/api/analyze' ? 'analyze' : path==='/api/forced-language' ? 'forced-language' : path==='/api/forensic-dossier' ? 'dossier' : '';
+ if(!action) throw new Error('This operation is served by the local verified catalogue.');
+ const payload = body ? {...body, action} : {action};
+ const res=await fetch(SUPABASE_RESEARCH_URL,{
+   method:'POST',
+   headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify(payload)
+ });
+ if(!res.ok) {
+   const raw=await res.text();
+   let message=raw;
+   try { message=JSON.parse(raw)?.error || raw; } catch {}
+   throw new Error(message || 'Research service request failed.');
+ }
  return res.json();
 }
 
@@ -37,7 +50,7 @@ function App(){
  const analyze=async()=>{if(!text.trim())return setError('Paste the original Hadith text first.');if(selected.length<2)return setError('Select at least two comparison languages.');setLoading('analysis');setError('');setAnalysis(null);try{const r=await callApi('/api/analyze',{text:text.trim(),languages:selectedLabels});setAnalysis(r.analysis)}catch(e){setError(e instanceof Error?e.message:'Analysis failed.')}finally{setLoading('')}};
  const runDossier=async()=>{if(!text.trim())return setError('Paste the original Hadith text first.');if(selected.length<2)return setError('Select at least two comparison languages.');setLoading('dossier');setError('');setDossier(null);try{const r=await callApi('/api/forensic-dossier',{text:text.trim(),languages:selectedLabels});setDossier(r.dossier)}catch(e){setError(e instanceof Error?e.message:'Dossier failed.')}finally{setLoading('')}};
  const runProbe=async()=>{if(!text.trim())return setError('Paste the original Hadith text first.');if(!forcedLanguage)return setError('Choose one target language.');if(probeMode==='evaluate'&&!translation.trim())return setError('Provide the translation to evaluate.');setLoading('probe');setError('');setProbe(null);try{const r=await callApi('/api/forced-language',{text:text.trim(),language:forcedLanguage,mode:probeMode,translation});setProbe(r.result)}catch(e){setError(e instanceof Error?e.message:'Probe failed.')}finally{setLoading('')}};
- const loadManuscripts=async()=>{setLoading('manuscripts');setError('');setManuscripts(MANUSCRIPT_FALLBACK);try{const r=await callApi('/api/manuscripts');if(Array.isArray(r.manuscripts)&&r.manuscripts.length)setManuscripts(r.manuscripts)}catch(e){console.warn('Manuscript API unavailable; using verified local catalogue.',e)}finally{setLoading('')}};
+ const loadManuscripts=async()=>{setLoading('manuscripts');setError('');setManuscripts(MANUSCRIPT_FALLBACK);setLoading('')};
  useEffect(()=>{if(view==='manuscripts'&&!manuscripts.length)loadManuscripts()},[view]);
 
  return <div className="min-h-screen">
