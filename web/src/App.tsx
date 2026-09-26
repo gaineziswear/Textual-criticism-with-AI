@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp, Clipboard, ClipboardPaste, FlaskConical, Languages, Menu, Search, ShieldCheck, Sparkles, X } from 'lucide-react';
 
-const RESEARCH_API_URL = import.meta.env.VITE_RESEARCH_API_BASE || '/api/research';
+const RESEARCH_API_URL = import.meta.env.VITE_RESEARCH_API_BASE || '/.netlify/functions/research';
 
 type Manuscript={id:string;work:string;collection:string;shelfmark:string;manuscript_date:string;language:string;script:string;diacritics_status:string;witness_status:string;witness_excerpt:string;source_url:string;notes:string};
 type Analysis={detected_language:string;detection_confidence:number;summary:string;findings:{text:string;language:string;confidence:number;classification:string;evidence:string;caveat:string}[];methodological_notes:string[]};
