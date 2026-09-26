@@ -6,12 +6,9 @@
 [functions]
   directory = "netlify/functions"
 
-# API wildcard is handled by the forensics function's in-code path.
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/forensics?route=/api/:splat"
-  status = 200
-  force = true
+# The forensics function declares /api/* directly via its in-code config.
+# Do not rewrite /api/* through /.netlify/functions because the function
+# uses a custom public path.
 
 [[redirects]]
   from = "/*"
