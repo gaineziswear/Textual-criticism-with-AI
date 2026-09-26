@@ -6,6 +6,7 @@
 [functions]
   directory = "netlify/functions"
 
+# API wildcard is handled by the forensics function's in-code path.
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/forensics?route=/api/:splat"
