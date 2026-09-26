@@ -35,7 +35,7 @@ async function sha256(text: string) {
 }
 
 async function runAI(instructions: string, input: unknown) {
-  const key = Netlify.env.get("OPENAI_API_KEY");
+  const key = Netlify.env.get("openaiapikey");
   if (!key) throw new Error("OPENAI_API_KEY is not configured.");
   const model = Netlify.env.get("RESEARCH_MODEL") || "gpt-5.6-luna";
   const response = await fetch("https://api.openai.com/v1/responses", {
