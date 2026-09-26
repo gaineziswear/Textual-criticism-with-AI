@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp, Clipboard, ClipboardPaste, FlaskConical, Languages, Menu, Search, ShieldCheck, Sparkles, X } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_FORENSICS_API_BASE || 'https://hadith-linguistic-forensics-am2zb5.v2.appdeploy.ai';
+const API_BASE = import.meta.env.VITE_FORENSICS_API_BASE || '/api/forensics';
 
 type Manuscript={id:string;work:string;collection:string;shelfmark:string;manuscript_date:string;language:string;script:string;diacritics_status:string;witness_status:string;witness_excerpt:string;source_url:string;notes:string};
 type Analysis={detected_language:string;detection_confidence:number;summary:string;findings:{text:string;language:string;confidence:number;classification:string;evidence:string;caveat:string}[];methodological_notes:string[]};
