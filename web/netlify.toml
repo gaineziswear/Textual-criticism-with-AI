@@ -1,0 +1,16 @@
+[build]
+  base = "web"
+  publish = "dist"
+  command = "npm run build"
+
+[functions]
+  directory = "netlify/functions"
+
+# The forensics function declares /api/* directly via its in-code config.
+# Do not rewrite /api/* through /.netlify/functions because the function
+# uses a custom public path.
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
