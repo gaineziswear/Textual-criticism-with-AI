@@ -9,3 +9,4 @@
   to = "/index.html"
   status = 200
 \n[functions]\n  directory = "netlify/functions"\n
+# Keep production builds on the Git-integrated Netlify pipeline.
